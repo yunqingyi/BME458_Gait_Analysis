@@ -326,16 +326,29 @@ class Win(QWidget):
         L_seq = combine_heel_toe(Pressure_L_F_rec, Pressure_L_B_rec)
         R_seq = combine_heel_toe(Pressure_R_F_rec, Pressure_R_B_rec)
 
-        # unit test button clicked to change data display
-        self.Label_Strd_time_l.setText("Avg Time of Strides:" + "Hello")
-        # print("Hello World\r\n")
-
-
         # calculate the number of strides, and take the smaller number
+        L_changepoints = find_changepoints(L_seq)
+        R_changepoints = find_changepoints(R_seq)
 
         # calculate the average time of each stance
+        tuple1_3 = (1, 3)
+        num_L_changepoints = len(L_changepoints(tuple1_3))
+        num_R_changepoints = len(R_changepoints(tuple1_3))
 
+        L_stride_time = list()
+        R_stride_time = list()
+        for i in range(num_L_changepoints - 1):
+            L_stride_time = L_changepoints(tuple1_3)[i+1] - L_changepoints(tuple1_3)[i]
+            R_stride_time = R_changepoints(tuple1_3)[i+1] - R_changepoints(tuple1_3)[i]
+        
+        L_stride_time_avg = Average(L_stride_time)
+        R_stride_time_avg = Average(R_stride_time)
 
+        # unit test button clicked to change data display
+        self.Label_Strd_time_l.setText("# of Left Strides:" + str(num_L_changepoints))
+
+def Average(lst):
+    return sum(lst) / len(lst)
 
 def find_changepoints(arr):
     changepoints = defaultdict(list)

@@ -14,8 +14,8 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QTe
     , QPushButton
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette
 
-portx = 'COM18'
-portx = 'COM20'# Check device manager for COM port number
+portx = 'COM24'
+# portx = 'COM20'# Check device manager for COM port number
 
 i = 0
 #queue

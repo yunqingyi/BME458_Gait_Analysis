@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QTe
     , QPushButton
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette
 
-portx = 'COM12'
+portx = 'COM20'# Check device manager for COM port number
 
 i = 0
 #queue
@@ -132,7 +132,7 @@ class Win(QWidget):
         self.Velocity_R_Z_pw.resize(400, 225)
         self.Velocity_R_Z_pw.move(500, 760)
         self.Velocity_R_Z_pw.showGrid(x=True, y=True)  # Turn on grid
-        self.Velocity_R_Z_pw.setRange(xRange=[0, historyLength], yRange=[300, 850], padding=0
+        self.Velocity_R_Z_pw.setRange(xRange=[0, historyLength], yRange=[300, 850], padding=0)
         self.Velocity_R_Z_Curve = self.Velocity_R_Z_pw.plot(Velocity_R_Z_Data, pen='r')  # plot in the widget
 
         # self.L_BPM1 = QLabel(self)
@@ -212,7 +212,7 @@ def find_changepoints(arr):
     return changepoints
 
 def combine_heel_toe(front, back):
-    combined = list[]
+    combined = list()
     error = 4
     for i in range(len(front)):
         if front[i] == 0 and back[i] == 0:
@@ -223,7 +223,7 @@ def combine_heel_toe(front, back):
             combined.append(2)
         elif front[i] == 1 and back[i] == 1:
             combined.append(3)
-        elif
+        else:
             combined.append(error)
             
 

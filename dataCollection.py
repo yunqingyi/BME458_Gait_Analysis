@@ -79,7 +79,7 @@ emg_R_rec = []
 class Win(QWidget):
     def __init__(self):
         super(Win,self).__init__()
-        self.setWindowTitle("Sketch1115")
+        self.setWindowTitle("DataCollection1129")
         self.resize(1920,1080)
 
         #Left
@@ -181,15 +181,21 @@ class Win(QWidget):
         self.B_SaveImage = QPushButton(self)
         self.B_SaveImage.setText("Button")
         self.B_SaveImage.resize(200, 50)
-        self.B_SaveImage.move(1420, 250)
+        self.B_SaveImage.move(1680, 900)
         self.B_SaveImage.setStyleSheet("QPushButton{font-size:30px;font-weight:normal;}")
-        self.B_SaveImage.clicked.connect(pressure_analysis)
+        self.B_SaveImage.clicked.connect(self.pressure_analysis)
 
-        # self.L_BPM1 = QLabel(self)
-        # self.L_BPM1.setText("BPM")
-        # self.L_BPM1.resize(400, 50)
-        # self.L_BPM1.move(1000, 10)
-        # self.L_BPM1.setStyleSheet("QLabel{color:rgb(255,22,22,255);font-size:50px;font-weight:normal;font-family:Arial;}")
+        self.Label_Strd_time_l = QLabel(self)
+        self.Label_Strd_time_l.setText("Avg Time of Stride(Left):")
+        self.Label_Strd_time_l.resize(400, 100)
+        self.Label_Strd_time_l.move(1100, 100)
+        self.Label_Strd_time_l.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
+
+        self.Label_Strd_time_r = QLabel(self)
+        self.Label_Strd_time_r.setText("Avg Time of Stride(Right):")
+        self.Label_Strd_time_r.resize(400, 100)
+        self.Label_Strd_time_r.move(1100, 200)
+        self.Label_Strd_time_r.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
 
 
     def plotData(self):
@@ -257,16 +263,16 @@ class Win(QWidget):
             Velocity_R_Z_Data[i - 1] = Velocity_R_Z_Queue.get()
 
             # Data collection for data analysis
-            Pressure_L_F_rec.append(Pressure_L_F_Data[i])
-            Pressure_L_B_rec.append(Pressure_L_B_Data[i])
-            deltaVx_L_rec.append(Velocity_L_X_Data[i])
-            deltaVz_L_rec.append(Velocity_L_Z_Data[i])
-            emg_L_rec.append(EMG_L_Data[i])
-            Pressure_R_F_rec.append(Pressure_R_F_Data[i])
-            Pressure_R_B_rec.append(Pressure_R_B_Data[i])
-            deltaVx_R_rec.append(Velocity_R_X_Data[i])
-            deltaVz_R_rec.append(Velocity_R_Z_Data[i])
-            emg_R_rec.append(EMG_R_Data[i])
+            Pressure_L_F_rec.append(Pressure_L_F_Data[-1])
+            Pressure_L_B_rec.append(Pressure_L_B_Data[-1])
+            deltaVx_L_rec.append(Velocity_L_X_Data[-1])
+            deltaVz_L_rec.append(Velocity_L_Z_Data[-1])
+            emg_L_rec.append(EMG_L_Data[-1])
+            Pressure_R_F_rec.append(Pressure_R_F_Data[-1])
+            Pressure_R_B_rec.append(Pressure_R_B_Data[-1])
+            deltaVx_R_rec.append(Velocity_R_X_Data[-1])
+            deltaVz_R_rec.append(Velocity_R_Z_Data[-1])
+            emg_R_rec.append(EMG_R_Data[-1])
 
 
         self.Pressure_L_F_Curve.setData(Pressure_L_F_Data)
@@ -291,7 +297,7 @@ class Win(QWidget):
 
             if (n):
                 line = str(mSerial.readline())
-                print(line)
+                # print(line)
                 dat = line.split(",")
                 print(dat)
                 if len(dat) == 12:
@@ -305,6 +311,31 @@ class Win(QWidget):
                     Velocity_L_Z_Queue.put(dat[8])
                     Velocity_R_X_Queue.put(dat[9])
                     Velocity_R_Z_Queue.put(dat[10])
+
+    def pressure_analysis(self):
+        LF_len = len(Pressure_L_F_rec)
+        LB_len = len(Pressure_L_B_rec)
+        RF_len = len(Pressure_R_F_rec)
+        RB_len = len(Pressure_R_B_rec)
+        actual_len = min(LF_len, LB_len, RF_len, RB_len)
+        del Pressure_L_F_rec[actual_len:]
+        del Pressure_L_B_rec[actual_len:]
+        del Pressure_R_F_rec[actual_len:]
+        del Pressure_R_B_rec[actual_len:]
+
+        L_seq = combine_heel_toe(Pressure_L_F_rec, Pressure_L_B_rec)
+        R_seq = combine_heel_toe(Pressure_R_F_rec, Pressure_R_B_rec)
+
+        # unit test button clicked to change data display
+        self.Label_Strd_time_l.setText("Avg Time of Strides:" + "Hello")
+        # print("Hello World\r\n")
+
+
+        # calculate the number of strides, and take the smaller number
+
+        # calculate the average time of each stance
+
+
 
 def find_changepoints(arr):
     changepoints = defaultdict(list)
@@ -333,23 +364,7 @@ def combine_heel_toe(front, back):
     return combined
 
 
-def pressure_analysis(LF, LB, RF, RB):
-    LF_len = len(LF)
-    LB_len = len(LB)
-    RF_len = len(RF)
-    RB_len = len(RB)
-    actual_len = min[LF_len, LB_len, RF_len, RB_len]
-    del LF[actual_len:]
-    del LB[actual_len:]
-    del RF[actual_len:]
-    del RB[actual_len:]
 
-    L_seq = combine_heel_toe(LF, LB)
-    R_seq = combine_heel_toe(RF, RB)
-    
-    # calculate the number of strides, and take the smaller number
-
-    # calculate the average time of each stance 
 
 
 if __name__ == "__main__":
@@ -381,7 +396,7 @@ if __name__ == "__main__":
     timer.start(10)  # Called every X ms
 
     w.show()
-    # pressure_analysis(Pressure_L_F_rec, Pressure_L_B_rec, Pressure_R_F_rec, Pressure_R_B_rec)
+    # w.pressure_analysis(Pressure_L_F_rec, Pressure_L_B_rec, Pressure_R_F_rec, Pressure_R_B_rec)
 
 
     sys.exit(app.exec_())

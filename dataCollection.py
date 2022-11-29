@@ -178,12 +178,12 @@ class Win(QWidget):
         self.Label_right.move(30, 880)
         self.Label_right.setStyleSheet("QLabel{font-size:16px;font-weight:normal;font-family:Arial;}")
 
-        # self.B_SaveImage = QPushButton(self)
-        # self.B_SaveImage.setText("Calibrate")
-        # self.B_SaveImage.resize(200, 50)
-        # self.B_SaveImage.move(1420, 250)
-        # self.B_SaveImage.setStyleSheet("QPushButton{font-size:30px;font-weight:normal;font-family: 微软雅黑;}")
-        # self.B_SaveImage.clicked.connect(self.calibrate)
+        self.B_SaveImage = QPushButton(self)
+        self.B_SaveImage.setText("Button")
+        self.B_SaveImage.resize(200, 50)
+        self.B_SaveImage.move(1420, 250)
+        self.B_SaveImage.setStyleSheet("QPushButton{font-size:30px;font-weight:normal;}")
+        self.B_SaveImage.clicked.connect(pressure_analysis)
 
         # self.L_BPM1 = QLabel(self)
         # self.L_BPM1.setText("BPM")
@@ -381,7 +381,7 @@ if __name__ == "__main__":
     timer.start(10)  # Called every X ms
 
     w.show()
-    pressure_analysis(Pressure_L_F_rec, Pressure_L_B_rec, Pressure_R_F_rec, Pressure_R_B_rec)
+    # pressure_analysis(Pressure_L_F_rec, Pressure_L_B_rec, Pressure_R_F_rec, Pressure_R_B_rec)
 
 
     sys.exit(app.exec_())

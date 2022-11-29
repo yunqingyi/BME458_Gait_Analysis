@@ -316,7 +316,7 @@ def find_changepoints(arr):
     return changepoints
 
 def combine_heel_toe(front, back):
-    combined = list[]
+    combined = list()
     error = 4
     for i in range(len(front)):
         if front[i] == 0 and back[i] == 0:
@@ -327,13 +327,9 @@ def combine_heel_toe(front, back):
             combined.append(2)
         elif front[i] == 1 and back[i] == 1:
             combined.append(3)
-        elif
+        else:
             combined.append(error)
-            
-
-
-
-
+    return combined
 
 
 def pressure_analysis(LF, LB, RF, RB):
@@ -341,16 +337,14 @@ def pressure_analysis(LF, LB, RF, RB):
     LB_len = len(LB)
     RF_len = len(RF)
     RB_len = len(RB)
-    min_len = min[LF_len, LB_len, RF_len, RB_len]
-    del LF[]
+    actual_len = min[LF_len, LB_len, RF_len, RB_len]
+    del LF[actual_len:]
+    del LB[actual_len:]
+    del RF[actual_len:]
+    del RB[actual_len:]
 
-    for i in range(actual_len):
-        if LF[i] == 0 and LB[i] == 0:
-            
-    LF_seq = find_changepoints(LF)
-    LB_seq = find_changepoints(LB)
-    RF_seq = find_changepoints(RF)
-    RB_seq = find_changepoints(RB)
+    L_seq = combine_heel_toe(LF, LB)
+    R_seq = combine_heel_toe(RF, RB)
     
     # calculate the number of strides, and take the smaller number
 

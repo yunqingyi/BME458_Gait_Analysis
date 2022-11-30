@@ -186,13 +186,13 @@ class Win(QWidget):
         self.B_SaveImage.clicked.connect(self.pressure_analysis)
 
         self.Label_Strd_time_l = QLabel(self)
-        self.Label_Strd_time_l.setText("Avg Time of Stride(Left):")
+        self.Label_Strd_time_l.setText("Average Stride Time(Left):")
         self.Label_Strd_time_l.resize(400, 100)
         self.Label_Strd_time_l.move(1100, 100)
         self.Label_Strd_time_l.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
 
         self.Label_Strd_time_r = QLabel(self)
-        self.Label_Strd_time_r.setText("Avg Time of Stride(Right):")
+        self.Label_Strd_time_r.setText("Average Stride Time(Right):")
         self.Label_Strd_time_r.resize(400, 100)
         self.Label_Strd_time_r.move(1100, 200)
         self.Label_Strd_time_r.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
@@ -345,7 +345,10 @@ class Win(QWidget):
         R_stride_time_avg = Average(R_stride_time)
 
         # unit test button clicked to change data display
-        self.Label_Strd_time_l.setText("# of Left Strides:" + str(num_L_changepoints))
+        # self.Label_Strd_time_l.setText("# of Left Strides:" + str(num_L_changepoints))
+        #TODO display avg stride time
+        self.Label_Strd_time_l.setText("Average Stride Time(Left): " + str(L_stride_time_avg))
+        self.Label_Strd_time_r.setText("Average Stride Time(Right): " + str(R_stride_time_avg))
 
 def Average(lst):
     return sum(lst) / len(lst)

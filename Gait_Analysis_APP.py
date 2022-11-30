@@ -13,9 +13,10 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QTextBrowser, QLabel, QLineEdit\
     , QPushButton
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette
+from collections import defaultdict
 
-portx = 'COM24'
-# portx = 'COM20'# Check device manager for COM port number
+portx = 'COM14' # Check device manager for COM port number
+system_freq = 100 # freq of data collection, 100Hz = 10 ms
 
 i = 0
 #queue
@@ -95,7 +96,7 @@ class Win(QWidget):
         self.EMG_L_pw.resize(400,225)
         self.EMG_L_pw.move(130, 270)
         self.EMG_L_pw.showGrid(x=True, y=True)  # Turn on grid
-        self.EMG_L_pw.setRange(xRange=[0, historyLength], yRange=[-100, 600], padding=0)
+        self.EMG_L_pw.setRange(xRange=[0, historyLength], yRange=[-100, 800], padding=0)
         self.EMG_L_Curve = self.EMG_L_pw.plot(EMG_L_Data, pen='r')  # plot in the widget
 
         self.Velocity_L_X_pw = pg.PlotWidget(self)  # Create a PlotWidget
@@ -125,7 +126,7 @@ class Win(QWidget):
         self.EMG_R_pw.resize(400, 225)
         self.EMG_R_pw.move(600, 270)
         self.EMG_R_pw.showGrid(x=True, y=True)  # Turn on grid
-        self.EMG_R_pw.setRange(xRange=[0, historyLength], yRange=[0, 1200], padding=0)
+        self.EMG_R_pw.setRange(xRange=[0, historyLength], yRange=[-100, 800], padding=0)
         self.EMG_R_Curve = self.EMG_R_pw.plot(EMG_R_Data, pen='r')  # plot in the widget
 
         self.Velocity_R_X_pw = pg.PlotWidget(self)  # Create a PlotWidget
@@ -167,49 +168,39 @@ class Win(QWidget):
         self.Label_right.setStyleSheet("QLabel{font-size:16px;font-weight:normal;font-family:Arial;}")
 
         self.Label_right = QLabel(self)
-        self.Label_right.setText("Forward \r\n Velocity")
+        self.Label_right.setText("Horizontal \r\n Velocity")
         self.Label_right.resize(100, 50)
         self.Label_right.move(30, 640)
         self.Label_right.setStyleSheet("QLabel{font-size:16px;font-weight:normal;font-family:Arial;}")
 
         self.Label_right = QLabel(self)
-        self.Label_right.setText("Upward \r\n Velocity")
+        self.Label_right.setText("Vertical \r\n Velocity")
         self.Label_right.resize(100, 50)
         self.Label_right.move(30, 880)
         self.Label_right.setStyleSheet("QLabel{font-size:16px;font-weight:normal;font-family:Arial;}")
 
         self.B_SaveImage = QPushButton(self)
-        self.B_SaveImage.setText("Button")
-        self.B_SaveImage.resize(200, 50)
-        self.B_SaveImage.move(1680, 900)
+        self.B_SaveImage.setText("Get Stride Time")
+        self.B_SaveImage.resize(400, 50)
+        self.B_SaveImage.move(1500, 900)
         self.B_SaveImage.setStyleSheet("QPushButton{font-size:30px;font-weight:normal;}")
         self.B_SaveImage.clicked.connect(self.pressure_analysis)
 
         self.Label_Strd_time_l = QLabel(self)
         self.Label_Strd_time_l.setText("Average Stride Time(Left):")
-        self.Label_Strd_time_l.resize(400, 100)
-        self.Label_Strd_time_l.move(1100, 100)
+        self.Label_Strd_time_l.resize(600, 100)
+        self.Label_Strd_time_l.move(1100, 50)
         self.Label_Strd_time_l.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
 
         self.Label_Strd_time_r = QLabel(self)
         self.Label_Strd_time_r.setText("Average Stride Time(Right):")
-        self.Label_Strd_time_r.resize(400, 100)
-        self.Label_Strd_time_r.move(1100, 200)
+        self.Label_Strd_time_r.resize(600, 100)
+        self.Label_Strd_time_r.move(1100, 150)
         self.Label_Strd_time_r.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
 
 
     def plotData(self):
         global i;
-        Pressure_L_F_rec.clear()
-        Pressure_L_B_rec.clear()
-        deltaVx_L_rec.clear()
-        deltaVz_L_rec.clear()
-        emg_L_rec.clear()
-        Pressure_R_F_rec.clear()
-        Pressure_R_B_rec.clear()
-        deltaVx_R_rec.clear()
-        deltaVz_R_rec.clear()
-        emg_R_rec.clear()
 
         if i < historyLength:
             Pressure_L_F_Data[i] = Pressure_L_F_Queue.get()
@@ -297,9 +288,9 @@ class Win(QWidget):
 
             if (n):
                 line = str(mSerial.readline())
-                # print(line)
                 dat = line.split(",")
-                print(dat)
+                # print(line)
+                # print(dat)
                 if len(dat) == 12:
                     Pressure_L_F_Queue.put(dat[1])
                     Pressure_L_B_Queue.put(dat[2])
@@ -331,18 +322,25 @@ class Win(QWidget):
         R_changepoints = find_changepoints(R_seq)
 
         # calculate the average time of each stance
-        tuple1_3 = (1, 3)
-        num_L_changepoints = len(L_changepoints(tuple1_3))
-        num_R_changepoints = len(R_changepoints(tuple1_3))
+        Left_changepoints = dict(L_changepoints)
+        Left_one_to_three = Left_changepoints["(1, 3)"]
+        num_L_changepoints = len(Left_one_to_three)
+
+        Right_changepoints = dict(R_changepoints)
+        Right_one_to_three = Right_changepoints["(1, 3)"]
+        num_R_changepoints = len(Right_one_to_three)
 
         L_stride_time = list()
         R_stride_time = list()
         for i in range(num_L_changepoints - 1):
-            L_stride_time = L_changepoints(tuple1_3)[i+1] - L_changepoints(tuple1_3)[i]
-            R_stride_time = R_changepoints(tuple1_3)[i+1] - R_changepoints(tuple1_3)[i]
+            stride_time_L = Left_one_to_three[i+1] - Left_one_to_three[i]
+            L_stride_time.append(stride_time_L)
+        for i in range(num_R_changepoints - 1):
+            stride_time_R = Right_one_to_three[i+1] - Right_one_to_three[i]
+            R_stride_time.append(stride_time_R)
         
-        L_stride_time_avg = Average(L_stride_time)
-        R_stride_time_avg = Average(R_stride_time)
+        L_stride_time_avg = Average(L_stride_time) * 1000 / system_freq # given in ms
+        R_stride_time_avg = Average(R_stride_time) * 1000 / system_freq # given in ms
 
         # unit test button clicked to change data display
         # self.Label_Strd_time_l.setText("# of Left Strides:" + str(num_L_changepoints))
@@ -358,9 +356,8 @@ def find_changepoints(arr):
     current_value = arr[0]
     for (index, value) in enumerate(arr):
         if value != current_value:
-            changepoints[ (current_value, value) ].append(index)
+            changepoints[str((current_value, value))].append(index)
             current_value = value
-    
     return changepoints
 
 def combine_heel_toe(front, back):
@@ -368,13 +365,13 @@ def combine_heel_toe(front, back):
     error = 4
     for i in range(len(front)):
         if front[i] == 0 and back[i] == 0:
-            combined.append(0)
-        elif front[i] == 0 and back[i] == 1:
             combined.append(1)
-        elif front[i] == 1 and back[i] == 0:
+        elif front[i] == 0 and back[i] == 1:
             combined.append(2)
-        elif front[i] == 1 and back[i] == 1:
+        elif front[i] == 1 and back[i] == 0:
             combined.append(3)
+        elif front[i] == 1 and back[i] == 1:
+            combined.append(4)
         else:
             combined.append(error)
     return combined
@@ -384,6 +381,17 @@ def combine_heel_toe(front, back):
 
 
 if __name__ == "__main__":
+
+    Pressure_L_F_rec.clear()
+    Pressure_L_B_rec.clear()
+    deltaVx_L_rec.clear()
+    deltaVz_L_rec.clear()
+    emg_L_rec.clear()
+    Pressure_R_F_rec.clear()
+    Pressure_R_B_rec.clear()
+    deltaVx_R_rec.clear()
+    deltaVz_R_rec.clear()
+    emg_R_rec.clear()
 
     app = QApplication(sys.argv)
 
@@ -409,10 +417,9 @@ if __name__ == "__main__":
 
     timer = pg.QtCore.QTimer()
     timer.timeout.connect(w.plotData)  # Set timer to refresh the display
-    timer.start(10)  # Called every X ms
+    timer.start(15)  # Called every X ms
 
     w.show()
-    # w.pressure_analysis(Pressure_L_F_rec, Pressure_L_B_rec, Pressure_R_F_rec, Pressure_R_B_rec)
 
 
     sys.exit(app.exec_())

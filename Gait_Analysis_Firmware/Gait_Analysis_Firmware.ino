@@ -1,28 +1,37 @@
 /*
-  Gait Analog Readings
+  Gait Analysis Arduino Firmware
 
-  Reads the analog signals required for gait analysis and prints each set of data out in a single line, separated by commas.
+  Digital input for 4 pressure sensors
+  Analog input for 2 EMG channels
+  I2C for 2 accelerometers
+  On serial port print each set of data out in a single line, separated by commas.
 
-  modified 17 Nov 2022
+  modified 29 Nov 2022
   by Tim Shi, Grace Yi
 */
 
 #include "Wire.h" // This library allows you to communicate with I2C devices.
 
-#define SYSTEM_FREQUENCY 50
-#define ACCE_CALI_COEFF_X 1.0f*9.8f/17000
-#define ACCE_CALI_COEFF_Y 1.0f*9.8f/15700
-#define ACCE_CALI_COEFF_Z 1.0f*9.8f/17000
+#define SYSTEM_FREQUENCY 100
+#define ACCE_CALI_COEFF_X 1.0f*9.8f/15000
+#define ACCE_CALI_COEFF_Y 1.0f*9.8f/15000
+#define ACCE_CALI_COEFF_Z 1.0f*9.8f/15000
 #define PRESSURE_THRESH 200
 
 
 const int emg_L_pin = A0;
 const int emg_R_pin = A1;
 
-const int pressure_L_F_pin_digi = 2;
-const int pressure_L_B_pin_digi = 4;
+const int pressure_L_F_pin = A2;
+const int pressure_L_B_pin = A3;
+const int pressure_R_F_pin = A4;
+const int pressure_R_B_pin = A5;
+
+const int pressure_L_F_pin_digi = 12;
+const int pressure_L_B_pin_digi = 13;
 const int pressure_R_F_pin_digi = 7;
 const int pressure_R_B_pin_digi = 8;
+const int velocity_calibrate_pin = 4;
 
 float vel_cal_x_l = 0.0;
 float vel_cal_y_l = 0.0;
@@ -115,7 +124,7 @@ void acceRead(){
   acc_y_r = raw_acc_y_r*ACCE_CALI_COEFF_Y;
   acc_z_r = raw_acc_z_r*ACCE_CALI_COEFF_Z;
 
-  if(digitalRead(12)){
+  if(digitalRead(velocity_calibrate_pin)){
     vel_cal_x_l = vel_x_l;
     vel_cal_y_l = vel_y_l;
     vel_cal_z_l = vel_z_l;
@@ -150,10 +159,22 @@ void velocityUpdate(){
 }
 
 void pressureAndEMGRead(){
-  pressure_L_F = digitalRead(pressure_L_F_pin_digi);
-  pressure_L_B = digitalRead(pressure_L_B_pin_digi);
-  pressure_R_F = digitalRead(pressure_R_F_pin_digi);
-  pressure_R_B = digitalRead(pressure_R_B_pin_digi);
+  // pressure_L_F = digitalRead(pressure_L_F_pin_digi);
+  // pressure_L_B = digitalRead(pressure_L_B_pin_digi);
+  // pressure_R_F = digitalRead(pressure_R_F_pin_digi);
+  // pressure_R_B = digitalRead(pressure_R_B_pin_digi);
+  const int thres_l = 160;
+  const int thres_r = 160;
+
+  if(analogRead(pressure_L_F_pin)>thres_l) pressure_L_F = 1;
+  else pressure_L_F = 0;
+  if(analogRead(pressure_L_B_pin)>thres_l) pressure_L_B = 1;
+  else pressure_L_B = 0;
+  if(analogRead(pressure_R_F_pin)>thres_r) pressure_R_F = 1;
+  else pressure_R_F = 0;
+  if(analogRead(pressure_R_B_pin)>thres_r) pressure_R_B = 1;
+  else pressure_R_B = 0;
+
   emg_L = analogRead(emg_L_pin);
   emg_R = analogRead(emg_R_pin);
 
@@ -166,23 +187,24 @@ void pressureAndEMGRead(){
 void setup() {
   // initialize serial readings
   Serial.begin(9600);
-  acceInit();
-  pinMode(pressure_L_F_pin_digi, INPUT);
-  pinMode(pressure_L_B_pin_digi, INPUT);
-  pinMode(pressure_R_F_pin_digi, INPUT);
-  pinMode(pressure_R_B_pin_digi, INPUT);
-  pinMode(12, INPUT);
+  // acceInit();
+  // pinMode(pressure_L_F_pin_digi, INPUT);
+  // pinMode(pressure_L_B_pin_digi, INPUT);
+  // pinMode(pressure_R_F_pin_digi, INPUT);
+  // pinMode(pressure_R_B_pin_digi, INPUT);
+  pinMode(velocity_calibrate_pin, INPUT);
 }
 
 // the loop function runs over and over again forever
+int counter = 0;
 void loop() {
   
-  acceRead();
-  velocityUpdate();
+  // acceRead();
+  // velocityUpdate();
   pressureAndEMGRead();
 
-
-  Serial.print("H");
+  counter++;
+  Serial.print(String(counter));
   Serial.print(",");
   Serial.print(String(pressure_L_F));
   Serial.print(",");
@@ -209,5 +231,6 @@ void loop() {
   Serial.println();
 
 
-  delay(1000/SYSTEM_FREQUENCY);
+  // delay(1000/SYSTEM_FREQUENCY);
+  delay(50);
 }

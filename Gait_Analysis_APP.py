@@ -16,7 +16,7 @@ from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette
 from collections import defaultdict
 
 portx = 'COM14' # Check device manager for COM port number
-system_freq = 100 # freq of data collection, 100Hz = 10 ms
+system_freq = 20 # freq of data collection, 100Hz = 10 ms
 
 i = 0
 #queue
@@ -330,23 +330,49 @@ class Win(QWidget):
         Right_one_to_three = Right_changepoints["(1, 3)"]
         num_R_changepoints = len(Right_one_to_three)
 
-        L_stride_time = list()
-        R_stride_time = list()
-        for i in range(num_L_changepoints - 1):
-            stride_time_L = Left_one_to_three[i+1] - Left_one_to_three[i]
-            L_stride_time.append(stride_time_L)
-        for i in range(num_R_changepoints - 1):
-            stride_time_R = Right_one_to_three[i+1] - Right_one_to_three[i]
-            R_stride_time.append(stride_time_R)
-        
-        L_stride_time_avg = Average(L_stride_time) * 1000 / system_freq # given in ms
-        R_stride_time_avg = Average(R_stride_time) * 1000 / system_freq # given in ms
+        if len(Left_one_to_three) > 1:
+            L_stride_time = list()
+            for i in range(num_L_changepoints - 1):
+                stride_time_L = Left_one_to_three[i+1] - Left_one_to_three[i]
+                if stride_time_L > 5:
+                    L_stride_time.append(stride_time_L)
+            L_stride_time_avg = Average(L_stride_time) * 1000 / system_freq # given in ms
+        else:
+            L_stride_time_avg = 0
+
+        if len(Right_one_to_three) > 1:
+            R_stride_time = list()
+            for i in range(num_R_changepoints - 1):
+                stride_time_R = Right_one_to_three[i + 1] - Right_one_to_three[i]
+                if stride_time_R > 5:
+                    R_stride_time.append(stride_time_R)
+            R_stride_time_avg = Average(R_stride_time) * 1000 / system_freq  # given in ms
+        else:
+            R_stride_time_avg = 0
+        print("one to three")
+        print(Left_one_to_three)
+        print(Right_one_to_three)
+        print("stride times")
+        print(L_stride_time)
+        print(R_stride_time)
 
         # unit test button clicked to change data display
         # self.Label_Strd_time_l.setText("# of Left Strides:" + str(num_L_changepoints))
         #TODO display avg stride time
-        self.Label_Strd_time_l.setText("Average Stride Time(Left): " + str(L_stride_time_avg))
-        self.Label_Strd_time_r.setText("Average Stride Time(Right): " + str(R_stride_time_avg))
+        if L_stride_time_avg != 0:
+            self.Label_Strd_time_l.setText("Average Stride Time(Left, in ms): " + str(L_stride_time_avg))
+        else:
+            self.Label_Strd_time_l.setText("Average Stride Time(Left): data collection error")
+        if R_stride_time_avg != 0:
+            self.Label_Strd_time_r.setText("Average Stride Time(Right, in ms): " + str(R_stride_time_avg))
+        else:
+            self.Label_Strd_time_l.setText("Average Stride Time(Right): data collection error")
+
+        Pressure_L_F_rec.clear()
+        Pressure_L_B_rec.clear()
+        Pressure_R_F_rec.clear()
+        Pressure_R_B_rec.clear()
+
 
 def Average(lst):
     return sum(lst) / len(lst)
@@ -417,7 +443,7 @@ if __name__ == "__main__":
 
     timer = pg.QtCore.QTimer()
     timer.timeout.connect(w.plotData)  # Set timer to refresh the display
-    timer.start(15)  # Called every X ms
+    timer.start(20)  # Called every X ms
 
     w.show()
 

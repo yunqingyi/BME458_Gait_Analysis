@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QTe
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette
 from collections import defaultdict
 
-portx = 'COM14' # Check device manager for COM port number
+portx = 'COM18' # Check device manager for COM port number
 system_freq = 20 # freq of data collection, 100Hz = 10 ms
 
 i = 0

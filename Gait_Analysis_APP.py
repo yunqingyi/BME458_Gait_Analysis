@@ -186,17 +186,49 @@ class Win(QWidget):
         self.B_SaveImage.setStyleSheet("QPushButton{font-size:30px;font-weight:normal;}")
         self.B_SaveImage.clicked.connect(self.pressure_analysis)
 
-        self.Label_Strd_time_l = QLabel(self)
-        self.Label_Strd_time_l.setText("Average Stride Time(Left):")
-        self.Label_Strd_time_l.resize(600, 100)
-        self.Label_Strd_time_l.move(1100, 50)
-        self.Label_Strd_time_l.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
+        self.Label_Strd_time_heel_L = QLabel(self)
+        self.Label_Strd_time_heel_L.setText("Avg Heel Stride Time(Left, in ms):")
+        self.Label_Strd_time_heel_L.resize(600, 100)
+        self.Label_Strd_time_heel_L.move(1100, 50)
+        self.Label_Strd_time_heel_L.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
 
-        self.Label_Strd_time_r = QLabel(self)
-        self.Label_Strd_time_r.setText("Average Stride Time(Right):")
-        self.Label_Strd_time_r.resize(600, 100)
-        self.Label_Strd_time_r.move(1100, 150)
-        self.Label_Strd_time_r.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
+        self.Label_Strd_time_toe_L = QLabel(self)
+        self.Label_Strd_time_toe_L.setText("Avg Toe Stride Time(Left, in ms): ")
+        self.Label_Strd_time_toe_L.resize(600, 100)
+        self.Label_Strd_time_toe_L.move(1100, 150)
+        self.Label_Strd_time_toe_L.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
+
+        self.Label_error_L = QLabel(self)
+        self.Label_error_L.setText("Error code ")
+        self.Label_error_L.resize(600, 100)
+        self.Label_error_L.move(1100, 250)
+        self.Label_error_L.setStyleSheet(
+            "QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
+
+        self.Label_Strd_time_heel_R = QLabel(self)
+        self.Label_Strd_time_heel_R.setText("Avg Heel Stride Time(Right, in ms):")
+        self.Label_Strd_time_heel_R.resize(600, 100)
+        self.Label_Strd_time_heel_R.move(1100, 350)
+        self.Label_Strd_time_heel_R.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
+
+
+
+        self.Label_Strd_time_toe_R = QLabel(self)
+        self.Label_Strd_time_toe_R.setText("Avg Toe Stride Time(Right, in ms):")
+        self.Label_Strd_time_toe_R.resize(600, 100)
+        self.Label_Strd_time_toe_R.move(1100, 450)
+        self.Label_Strd_time_toe_R.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
+
+
+        self.Label_error_R = QLabel(self)
+        self.Label_error_R.setText("Error code ")
+        self.Label_error_R.resize(600, 100)
+        self.Label_error_R.move(1100, 550)
+        self.Label_error_R.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
+
+
+
+        
 
 
     def plotData(self):
@@ -322,55 +354,189 @@ class Win(QWidget):
         R_changepoints = find_changepoints(R_seq)
 
         # calculate the average time of each stance
-        Left_changepoints = dict(L_changepoints)
+        Left_changepoints = L_changepoints
         Left_one_to_three = Left_changepoints["(1, 3)"]
-        num_L_changepoints = len(Left_one_to_three)
+        num_L_changepoints_13 = len(Left_one_to_three)
+        Left_two_to_one = Left_changepoints["(2, 1)"]
+        num_L_changepoints_21 = len(Left_two_to_one)
 
-        Right_changepoints = dict(R_changepoints)
+        Right_changepoints = R_changepoints
         Right_one_to_three = Right_changepoints["(1, 3)"]
-        num_R_changepoints = len(Right_one_to_three)
+        num_R_changepoints_13 = len(Right_one_to_three)
+        Right_two_to_one = Right_changepoints["(2, 1)"]
+        num_R_changepoints_21 = len(Right_two_to_one)
 
-        if len(Left_one_to_three) > 1:
-            L_stride_time = list()
-            for i in range(num_L_changepoints - 1):
-                stride_time_L = Left_one_to_three[i+1] - Left_one_to_three[i]
-                if stride_time_L > 5:
-                    L_stride_time.append(stride_time_L)
-            L_stride_time_avg = Average(L_stride_time) * 1000 / system_freq # given in ms
-        else:
-            L_stride_time_avg = 0
+        L_stride_time_heel = list()
+        L_stride_time_toe = list()
+        R_stride_time_heel = list()
+        R_stride_time_toe = list()
 
-        if len(Right_one_to_three) > 1:
-            R_stride_time = list()
-            for i in range(num_R_changepoints - 1):
-                stride_time_R = Right_one_to_three[i + 1] - Right_one_to_three[i]
-                if stride_time_R > 5:
-                    R_stride_time.append(stride_time_R)
-            R_stride_time_avg = Average(R_stride_time) * 1000 / system_freq  # given in ms
-        else:
-            R_stride_time_avg = 0
-        print("one to three")
+        # Left nominal case
+        if num_L_changepoints_13 > 1:
+            # stride time based on heel strike
+            for i in range(num_L_changepoints_13 - 1):
+                stride_time_L_heel = Left_one_to_three[i+1] - Left_one_to_three[i]
+                if stride_time_L_heel > 5:
+                    L_stride_time_heel.append(stride_time_L_heel)
+            if len(L_stride_time_heel) >= 2:
+                L_stride_time_avg_heel = Average(L_stride_time_heel) * 1000 / system_freq # given in ms
+            else:
+                L_stride_time_avg_heel = 0
+
+        if num_L_changepoints_21 > 1:
+            # stride time based on toe off
+            for i in range(num_L_changepoints_21 - 1):
+                stride_time_L_toe = Left_two_to_one[i+1] - Left_two_to_one[i]
+                if stride_time_L_toe > 5:
+                    L_stride_time_toe.append(stride_time_L_toe)
+            if len(L_stride_time_toe) >= 2:
+                L_stride_time_avg_toe = Average(L_stride_time_toe) * 1000 / system_freq # given in ms
+            else:
+                L_stride_time_avg_toe = 0
+
+        # Left: not enough data collected
+        if num_L_changepoints_13 <= 2:
+            L_stride_time_avg_heel = 0
+        if num_L_changepoints_21 <= 2:
+            L_stride_time_avg_toe = 0
+
+        # Right nominal case
+        if num_R_changepoints_13 > 1:
+            # stride time based on heel strike
+            for i in range(num_R_changepoints_13 - 1):
+                stride_time_R_heel = Right_one_to_three[i+1] - Right_one_to_three[i]
+                if stride_time_R_heel > 5:
+                    R_stride_time_heel.append(stride_time_R_heel)
+            if len(R_stride_time_heel) >= 2:
+                R_stride_time_avg_heel = Average(R_stride_time_heel) * 1000 / system_freq  # given in ms
+            else:
+                R_stride_time_avg_heel = 0
+
+        if num_R_changepoints_21 > 1:
+            # stride time based on toe off
+            for i in range(num_R_changepoints_21 - 1):
+                stride_time_R_toe = Right_two_to_one[i+1] - Right_two_to_one[i]
+                if stride_time_R_toe > 5:
+                    R_stride_time_toe.append(stride_time_R_toe)
+            if len(R_stride_time_toe) >= 2:
+                R_stride_time_avg_toe = Average(R_stride_time_toe) * 1000 / system_freq # given in ms
+            else:
+                R_stride_time_avg_toe = 0
+
+        # Right: not enough data collected
+        if num_R_changepoints_13 <= 2:
+            R_stride_time_avg_heel = 0
+        if num_R_changepoints_21 <= 2:
+            R_stride_time_avg_toe = 0
+
+        # Left error codes
+        error_code_L = 0
+        # insufficient heel engagement
+        if num_L_changepoints_13 < (num_L_changepoints_21 - 5):
+            error_code_L = -2
+        # missing heel strike
+        if num_L_changepoints_13 == 0:
+            error_code_L = -1
+        # insufficient toe engagement
+        if num_L_changepoints_21 < (num_L_changepoints_13 - 5):
+            error_code_L = -4
+        # missing toe off
+        if num_L_changepoints_21 == 0:
+            error_code_L = -3
+        # can't detect motion
+        if num_L_changepoints_21 == 0 and num_L_changepoints_13 == 0:
+            error_code_L = -5
+
+
+        # Right error codes
+        error_code_R = 0
+        # insufficient heel engagement
+        if num_R_changepoints_13 < (num_R_changepoints_21 - 5):
+            error_code_R = -2
+        # missing heel strike
+        if num_R_changepoints_13 == 0:
+            error_code_R = -1
+        # insufficient toe engagement
+        if num_R_changepoints_21 < (num_R_changepoints_13 - 5):
+            error_code_R = -4
+        # missing toe off
+        if num_R_changepoints_21 == 0:
+            error_code_R = -3
+        # can't detect motion
+        if num_R_changepoints_21 == 0 and num_R_changepoints_13 == 0:
+            error_code_R = -5
+
+        print("Left one to three")
         print(Left_one_to_three)
+        print("Right one to three")
         print(Right_one_to_three)
-        print("stride times")
-        print(L_stride_time)
-        print(R_stride_time)
+        print("Left two to one")
+        print(Left_two_to_one)
+        print("Left two to one avg")
+        print(L_stride_time_toe)
+        print("Right two to one")
+        print(Right_two_to_one)
+
 
         # unit test button clicked to change data display
         # self.Label_Strd_time_l.setText("# of Left Strides:" + str(num_L_changepoints))
-        if L_stride_time_avg != 0:
-            self.Label_Strd_time_l.setText("Average Stride Time(Left, in ms): " + str(L_stride_time_avg))
+        # display avg stride time based on heel strike
+        if L_stride_time_avg_heel > 1:
+            self.Label_Strd_time_heel_L.setText("Avg Heel Stride Time(Left, in ms): " + str(L_stride_time_avg_heel))
         else:
-            self.Label_Strd_time_l.setText("Average Stride Time(Left): data collection error")
-        if R_stride_time_avg != 0:
-            self.Label_Strd_time_r.setText("Average Stride Time(Right, in ms): " + str(R_stride_time_avg))
+            self.Label_Strd_time_heel_L.setText("Avg Heel Stride Time(Left, in ms): data collection error")
+        if R_stride_time_avg_heel > 1:
+            self.Label_Strd_time_heel_R.setText("Avg Heel Stride Time(Right, in ms): " + str(R_stride_time_avg_heel))
         else:
-            self.Label_Strd_time_l.setText("Average Stride Time(Right): data collection error")
+            self.Label_Strd_time_heel_R.setText("Avg Heel Stride Time(Right, in ms): data collection error")
+        # display avg stride time based on toe strike
+        if L_stride_time_avg_toe > 1:
+            self.Label_Strd_time_toe_L.setText("Avg Toe Stride Time(Left, in ms): " + str(L_stride_time_avg_toe))
+        else:
+            self.Label_Strd_time_toe_L.setText("Avg Toe Stride Time(Left, in ms): data collection error")
+        if R_stride_time_avg_toe > 1:
+            self.Label_Strd_time_toe_R.setText("Avg Toe Stride Time(Right, in ms): " + str(R_stride_time_avg_toe))
+        else:
+            self.Label_Strd_time_toe_R.setText("Avg Toe Stride Time(Right, in ms): data collection error")
+
+        # TODO display error codes
+        if error_code_L != 0:
+            if error_code_L == -1:
+                self.Label_error_L.setText("Error code " + str(error_code_L) + ": missing heel strike")
+            elif error_code_L == -2:
+                self.Label_error_L.setText("Error code " + str(error_code_L) + ": insufficient heel engagement")
+            elif error_code_L == -3:
+                self.Label_error_L.setText("Error code " + str(error_code_L) + ": missing toe off")
+            elif error_code_L == -4:
+                self.Label_error_L.setText("Error code " + str(error_code_L) + ": insufficient toe engagement")
+            elif error_code_L == -5:
+                self.Label_error_L.setText("Error code " + str(error_code_L) + ": can't detect motion")
+        else:
+            self.Label_error_L.setText("Error code " + str(error_code_L) + ": no error")
+        # TODO display error codes
+        if error_code_R != 0:
+            if error_code_R == -1:
+                self.Label_error_R.setText("Error code " + str(error_code_R) + ": missing heel strike")
+            elif error_code_R == -2:
+                self.Label_error_R.setText("Error code " + str(error_code_R) + ": insufficient heel engagement")
+            elif error_code_R == -3:
+                self.Label_error_R.setText("Error code " + str(error_code_R) + ": missing toe off")
+            elif error_code_R == -4:
+                self.Label_error_R.setText("Error code " + str(error_code_R) + ": insufficient toe engagement")
+            elif error_code_R == -5:
+                self.Label_error_R.setText("Error code " + str(error_code_R) + ": can't detect motion")
+        else:
+            self.Label_error_R.setText("Error code " + str(error_code_R) + ": no error")
+
 
         Pressure_L_F_rec.clear()
         Pressure_L_B_rec.clear()
         Pressure_R_F_rec.clear()
         Pressure_R_B_rec.clear()
+        L_stride_time_heel.clear()
+        R_stride_time_heel.clear()
+        L_stride_time_toe.clear()
+        R_stride_time_toe.clear()
 
 
 def Average(lst):
@@ -391,9 +557,9 @@ def combine_heel_toe(front, back):
     for i in range(len(front)):
         if front[i] == 0 and back[i] == 0:
             combined.append(1)
-        elif front[i] == 0 and back[i] == 1:
-            combined.append(2)
         elif front[i] == 1 and back[i] == 0:
+            combined.append(2)
+        elif front[i] == 0 and back[i] == 1:
             combined.append(3)
         elif front[i] == 1 and back[i] == 1:
             combined.append(4)

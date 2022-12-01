@@ -52,6 +52,8 @@ float vel_L_X = 0.0;
 float vel_L_Z = 0.0;
 float vel_R_X = 0.0;
 float vel_R_Z = 0.0;
+int avg_emg_L = 0.0;
+int avg_emg_R = 0.0;
 
 
 // Accelerometer initialization
@@ -227,6 +229,10 @@ void loop() {
   Serial.print(String(vel_R_X));
   Serial.print(",");
   Serial.print(String(vel_R_Z));
+  Serial.print(",");
+  Serial.print(String(avg_emg_L));
+  Serial.print(",");
+  Serial.print(String(avg_emg_R));
   Serial.print(",");
   Serial.println();
 

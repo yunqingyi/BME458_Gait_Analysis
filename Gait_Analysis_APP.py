@@ -358,7 +358,6 @@ class Win(QWidget):
 
         # unit test button clicked to change data display
         # self.Label_Strd_time_l.setText("# of Left Strides:" + str(num_L_changepoints))
-        #TODO display avg stride time
         if L_stride_time_avg != 0:
             self.Label_Strd_time_l.setText("Average Stride Time(Left, in ms): " + str(L_stride_time_avg))
         else:

@@ -15,8 +15,8 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QTe
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette
 from collections import defaultdict
 
-portx = 'COM18' # Check device manager for COM port number
-system_freq = 20 # freq of data collection, 100Hz = 10 ms
+portx = 'COM20' # !!!!Check device manager for COM port number!!!!
+system_freq = 20 # freq of data collection, 20Hz = 50 ms
 
 i = 0
 #queue
@@ -59,6 +59,7 @@ EMG_R_Data = np.zeros(historyLength).__array__('d')
 Velocity_R_X_Data = np.zeros(historyLength).__array__('d')
 Velocity_R_Z_Data = np.zeros(historyLength).__array__('d')
 
+# These are not being used
 Velocity_Offset_L_X = 0
 Velocity_Offset_L_Z = 0
 Velocity_Offset_R_X = 0
@@ -80,10 +81,10 @@ emg_R_rec = []
 class Win(QWidget):
     def __init__(self):
         super(Win,self).__init__()
-        self.setWindowTitle("DataCollection1129")
+        self.setWindowTitle("Gait_Analysis_APP")
         self.resize(1920,1080)
 
-        #Left
+        # Left plots
         self.Pressure_L_pw = pg.PlotWidget(self)  # Create a PlotWidget
         self.Pressure_L_pw.resize(400,225)
         self.Pressure_L_pw.move(130,30)
@@ -113,7 +114,7 @@ class Win(QWidget):
         self.Velocity_L_Z_pw.setRange(xRange=[0, historyLength], yRange=[-0.3, 0.3], padding=0)
         self.Velocity_L_Z_Curve = self.Velocity_L_Z_pw.plot(Velocity_L_Z_Data, pen='r')  # plot in the widget
 
-        #Right
+        # Right plots
         self.Pressure_R_pw = pg.PlotWidget(self)  # Create a PlotWidget
         self.Pressure_R_pw.resize(400, 225)
         self.Pressure_R_pw.move(600, 30)
@@ -143,6 +144,7 @@ class Win(QWidget):
         self.Velocity_R_Z_pw.setRange(xRange=[0, historyLength], yRange=[-0.3, 0.3], padding=0)
         self.Velocity_R_Z_Curve = self.Velocity_R_Z_pw.plot(Velocity_R_Z_Data, pen='r')  # plot in the widget
 
+        # plot labels
         self.Label_left = QLabel(self)
         self.Label_left.setText("LEFT")
         self.Label_left.resize(100, 20)
@@ -178,53 +180,52 @@ class Win(QWidget):
         self.Label_right.resize(100, 50)
         self.Label_right.move(30, 880)
         self.Label_right.setStyleSheet("QLabel{font-size:16px;font-weight:normal;font-family:Arial;}")
+        # End of plot labels
 
-        self.B_SaveImage = QPushButton(self)
-        self.B_SaveImage.setText("Get Stride Time")
-        self.B_SaveImage.resize(400, 50)
-        self.B_SaveImage.move(1500, 900)
-        self.B_SaveImage.setStyleSheet("QPushButton{font-size:30px;font-weight:normal;}")
-        self.B_SaveImage.clicked.connect(self.pressure_analysis)
+        self.Button_Pressure_Analysis = QPushButton(self)
+        self.Button_Pressure_Analysis.setText("Get Stride Time")
+        self.Button_Pressure_Analysis.resize(400, 50)
+        self.Button_Pressure_Analysis.move(1500, 900)
+        self.Button_Pressure_Analysis.setStyleSheet("QPushButton{font-size:30px;font-weight:normal;}")
+        self.Button_Pressure_Analysis.clicked.connect(self.pressure_analysis)
 
         self.Label_Strd_time_heel_L = QLabel(self)
         self.Label_Strd_time_heel_L.setText("Avg Heel Stride Time(Left, in ms):")
         self.Label_Strd_time_heel_L.resize(600, 100)
-        self.Label_Strd_time_heel_L.move(1100, 50)
-        self.Label_Strd_time_heel_L.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
+        self.Label_Strd_time_heel_L.move(1020, 30)
+        self.Label_Strd_time_heel_L.setStyleSheet("QLabel{color:rgb(0,0,255,255);font-size:20px;font-weight:normal;font-family:Arial;}")
 
         self.Label_Strd_time_toe_L = QLabel(self)
         self.Label_Strd_time_toe_L.setText("Avg Toe Stride Time(Left, in ms): ")
         self.Label_Strd_time_toe_L.resize(600, 100)
-        self.Label_Strd_time_toe_L.move(1100, 150)
-        self.Label_Strd_time_toe_L.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
+        self.Label_Strd_time_toe_L.move(1020, 130)
+        self.Label_Strd_time_toe_L.setStyleSheet("QLabel{color:rgb(255,0,0,255);font-size:20px;font-weight:normal;font-family:Arial;}")
 
         self.Label_error_L = QLabel(self)
         self.Label_error_L.setText("Error code ")
         self.Label_error_L.resize(600, 100)
-        self.Label_error_L.move(1100, 250)
+        self.Label_error_L.move(1020, 230)
         self.Label_error_L.setStyleSheet(
-            "QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
+            "QLabel{color:rgb(255,200,0,255);font-size:20px;font-weight:normal;font-family:Arial;}")
 
         self.Label_Strd_time_heel_R = QLabel(self)
         self.Label_Strd_time_heel_R.setText("Avg Heel Stride Time(Right, in ms):")
         self.Label_Strd_time_heel_R.resize(600, 100)
-        self.Label_Strd_time_heel_R.move(1100, 350)
-        self.Label_Strd_time_heel_R.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
-
-
+        self.Label_Strd_time_heel_R.move(1520, 30)
+        self.Label_Strd_time_heel_R.setStyleSheet("QLabel{color:rgb(0,0,255,255);font-size:20px;font-weight:normal;font-family:Arial;}")
 
         self.Label_Strd_time_toe_R = QLabel(self)
         self.Label_Strd_time_toe_R.setText("Avg Toe Stride Time(Right, in ms):")
         self.Label_Strd_time_toe_R.resize(600, 100)
-        self.Label_Strd_time_toe_R.move(1100, 450)
-        self.Label_Strd_time_toe_R.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
+        self.Label_Strd_time_toe_R.move(1520, 130)
+        self.Label_Strd_time_toe_R.setStyleSheet("QLabel{color:rgb(255,0,0,255);font-size:20px;font-weight:normal;font-family:Arial;}")
 
 
         self.Label_error_R = QLabel(self)
         self.Label_error_R.setText("Error code ")
         self.Label_error_R.resize(600, 100)
-        self.Label_error_R.move(1100, 550)
-        self.Label_error_R.setStyleSheet("QLabel{color:rgb(0,0,0,255);font-size:28px;font-weight:normal;font-family:Arial;}")
+        self.Label_error_R.move(1520, 230)
+        self.Label_error_R.setStyleSheet("QLabel{color:rgb(255,200,0,255);font-size:20px;font-weight:normal;font-family:Arial;}")
 
 
 
@@ -466,6 +467,7 @@ class Win(QWidget):
         if num_R_changepoints_21 == 0 and num_R_changepoints_13 == 0:
             error_code_R = -5
 
+        # debugging print
         print("Left one to three")
         print(Left_one_to_three)
         print("Right one to three")
@@ -480,53 +482,54 @@ class Win(QWidget):
 
         # unit test button clicked to change data display
         # self.Label_Strd_time_l.setText("# of Left Strides:" + str(num_L_changepoints))
+
         # display avg stride time based on heel strike
         if L_stride_time_avg_heel > 1:
-            self.Label_Strd_time_heel_L.setText("Avg Heel Stride Time(Left, in ms): " + str(L_stride_time_avg_heel))
+            self.Label_Strd_time_heel_L.setText("Avg Heel Stride Time(Left, in ms): \r\n" + str(L_stride_time_avg_heel))
         else:
-            self.Label_Strd_time_heel_L.setText("Avg Heel Stride Time(Left, in ms): data collection error")
+            self.Label_Strd_time_heel_L.setText("Avg Heel Stride Time(Left, in ms): \r\ndata collection error")
         if R_stride_time_avg_heel > 1:
-            self.Label_Strd_time_heel_R.setText("Avg Heel Stride Time(Right, in ms): " + str(R_stride_time_avg_heel))
+            self.Label_Strd_time_heel_R.setText("Avg Heel Stride Time(Right, in ms): \r\n" + str(R_stride_time_avg_heel))
         else:
-            self.Label_Strd_time_heel_R.setText("Avg Heel Stride Time(Right, in ms): data collection error")
+            self.Label_Strd_time_heel_R.setText("Avg Heel Stride Time(Right, in ms): \r\ndata collection error")
         # display avg stride time based on toe strike
         if L_stride_time_avg_toe > 1:
-            self.Label_Strd_time_toe_L.setText("Avg Toe Stride Time(Left, in ms): " + str(L_stride_time_avg_toe))
+            self.Label_Strd_time_toe_L.setText("Avg Toe Stride Time(Left, in ms): \r\n" + str(L_stride_time_avg_toe))
         else:
-            self.Label_Strd_time_toe_L.setText("Avg Toe Stride Time(Left, in ms): data collection error")
+            self.Label_Strd_time_toe_L.setText("Avg Toe Stride Time(Left, in ms): \r\ndata collection error")
         if R_stride_time_avg_toe > 1:
-            self.Label_Strd_time_toe_R.setText("Avg Toe Stride Time(Right, in ms): " + str(R_stride_time_avg_toe))
+            self.Label_Strd_time_toe_R.setText("Avg Toe Stride Time(Right, in ms): \r\n" + str(R_stride_time_avg_toe))
         else:
-            self.Label_Strd_time_toe_R.setText("Avg Toe Stride Time(Right, in ms): data collection error")
+            self.Label_Strd_time_toe_R.setText("Avg Toe Stride Time(Right, in ms): \r\ndata collection error")
 
-        # TODO display error codes
+        # Display error codes - Left
         if error_code_L != 0:
             if error_code_L == -1:
-                self.Label_error_L.setText("Error code " + str(error_code_L) + ": missing heel strike")
+                self.Label_error_L.setText("Error code " + str(error_code_L) + ": \r\nmissing heel strike")
             elif error_code_L == -2:
-                self.Label_error_L.setText("Error code " + str(error_code_L) + ": insufficient heel engagement")
+                self.Label_error_L.setText("Error code " + str(error_code_L) + ": \r\ninsufficient heel engagement")
             elif error_code_L == -3:
-                self.Label_error_L.setText("Error code " + str(error_code_L) + ": missing toe off")
+                self.Label_error_L.setText("Error code " + str(error_code_L) + ": \r\nmissing toe off")
             elif error_code_L == -4:
-                self.Label_error_L.setText("Error code " + str(error_code_L) + ": insufficient toe engagement")
+                self.Label_error_L.setText("Error code " + str(error_code_L) + ": \r\ninsufficient toe engagement")
             elif error_code_L == -5:
-                self.Label_error_L.setText("Error code " + str(error_code_L) + ": can't detect motion")
+                self.Label_error_L.setText("Error code " + str(error_code_L) + ": \r\ncan't detect motion")
         else:
-            self.Label_error_L.setText("Error code " + str(error_code_L) + ": no error")
-        # TODO display error codes
+            self.Label_error_L.setText("Error code " + str(error_code_L) + ": \r\nno error")
+        # Display error codes - Right
         if error_code_R != 0:
             if error_code_R == -1:
-                self.Label_error_R.setText("Error code " + str(error_code_R) + ": missing heel strike")
+                self.Label_error_R.setText("Error code " + str(error_code_R) + ": \r\nmissing heel strike")
             elif error_code_R == -2:
-                self.Label_error_R.setText("Error code " + str(error_code_R) + ": insufficient heel engagement")
+                self.Label_error_R.setText("Error code " + str(error_code_R) + ": \r\ninsufficient heel engagement")
             elif error_code_R == -3:
-                self.Label_error_R.setText("Error code " + str(error_code_R) + ": missing toe off")
+                self.Label_error_R.setText("Error code " + str(error_code_R) + ": \r\nmissing toe off")
             elif error_code_R == -4:
-                self.Label_error_R.setText("Error code " + str(error_code_R) + ": insufficient toe engagement")
+                self.Label_error_R.setText("Error code " + str(error_code_R) + ": \r\ninsufficient toe engagement")
             elif error_code_R == -5:
-                self.Label_error_R.setText("Error code " + str(error_code_R) + ": can't detect motion")
+                self.Label_error_R.setText("Error code " + str(error_code_R) + ": \r\ncan't detect motion")
         else:
-            self.Label_error_R.setText("Error code " + str(error_code_R) + ": no error")
+            self.Label_error_R.setText("Error code " + str(error_code_R) + ": \r\nno error")
 
 
         Pressure_L_F_rec.clear()
@@ -587,8 +590,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     w = Win()
-
-
 
     bps = 9600
     # Serial is open

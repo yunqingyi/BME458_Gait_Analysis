@@ -6,6 +6,7 @@ import threading
 import numpy as np
 from queue import Queue
 import time
+import mouse
 
 import sys
 import random
@@ -612,7 +613,9 @@ def combine_heel_toe(front, back):
     return combined
 
 
-
+def mouse_click():
+    if Pressure_R_F_rec[i] != 0:
+        mouse.click('left')
 
 
 if __name__ == "__main__":
@@ -647,6 +650,9 @@ if __name__ == "__main__":
         serial.close()  # close serial port
     th1 = threading.Thread(target=w.Serial)
     th1.start()
+
+    th2 = threading.Thread(target=mouse_click)
+    th2.start()
 
     timer = pg.QtCore.QTimer()
     timer.timeout.connect(w.plotData)  # Set timer to refresh the display

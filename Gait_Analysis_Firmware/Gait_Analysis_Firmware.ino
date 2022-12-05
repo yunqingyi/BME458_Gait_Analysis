@@ -21,6 +21,7 @@
 
 const int emg_L_pin = A0;
 const int emg_R_pin = A1;
+const int emg_calibrate_pin = 4;
 
 const int pressure_L_F_pin = A2;
 const int pressure_L_B_pin = A3;
@@ -39,6 +40,9 @@ float vel_cal_z_l = 0.0;
 float vel_cal_x_r = 0.0;
 float vel_cal_y_r = 0.0;
 float vel_cal_z_r = 0.0;
+
+int emg_cal_l = 0;
+int emg_cal_r = 0;
 
 
 //send to PC
@@ -177,8 +181,13 @@ void pressureAndEMGRead(){
   if(analogRead(pressure_R_B_pin)>thres_r) pressure_R_B = 1;
   else pressure_R_B = 0;
 
-  emg_L = analogRead(emg_L_pin);
-  emg_R = analogRead(emg_R_pin);
+  if(digitalRead(emg_calibrate_pin)){
+    emg_cal_l = analogRead(emg_L_pin);
+    emg_cal_r = analogRead(emg_R_pin);
+  }
+
+  emg_L = analogRead(emg_L_pin)-emg_cal_l;
+  emg_R = analogRead(emg_R_pin)-emg_cal_r;
 
 }
 

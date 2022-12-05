@@ -239,10 +239,10 @@ void loop() {
   Serial.print(",");
   Serial.print(String(vel_R_Z));
   Serial.print(",");
-  Serial.print(String(avg_emg_L));
-  Serial.print(",");
-  Serial.print(String(avg_emg_R));
-  Serial.print(",");
+  // Serial.print(String(avg_emg_L));
+  // Serial.print(",");
+  // Serial.print(String(avg_emg_R));
+  // Serial.print(",");
   Serial.println();
 
 

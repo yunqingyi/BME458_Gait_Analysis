@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QTe
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette
 from collections import defaultdict
 
-portx = 'COM20' # !!!!Check device manager for COM port number!!!!
+portx = 'COM21' # !!!!Check device manager for COM port number!!!!
 system_freq = 20 # freq of data collection, 20Hz = 50 ms
 
 i = 0
@@ -97,7 +97,7 @@ class Win(QWidget):
         self.EMG_L_pw.resize(400,225)
         self.EMG_L_pw.move(130, 270)
         self.EMG_L_pw.showGrid(x=True, y=True)  # Turn on grid
-        self.EMG_L_pw.setRange(xRange=[0, historyLength], yRange=[-100, 800], padding=0)
+        self.EMG_L_pw.setRange(xRange=[0, historyLength], yRange=[-500, 500], padding=0)
         self.EMG_L_Curve = self.EMG_L_pw.plot(EMG_L_Data, pen='r')  # plot in the widget
 
         self.Velocity_L_X_pw = pg.PlotWidget(self)  # Create a PlotWidget
@@ -127,7 +127,7 @@ class Win(QWidget):
         self.EMG_R_pw.resize(400, 225)
         self.EMG_R_pw.move(600, 270)
         self.EMG_R_pw.showGrid(x=True, y=True)  # Turn on grid
-        self.EMG_R_pw.setRange(xRange=[0, historyLength], yRange=[-100, 800], padding=0)
+        self.EMG_R_pw.setRange(xRange=[0, historyLength], yRange=[-500, 500], padding=0)
         self.EMG_R_Curve = self.EMG_R_pw.plot(EMG_R_Data, pen='r')  # plot in the widget
 
         self.Velocity_R_X_pw = pg.PlotWidget(self)  # Create a PlotWidget
@@ -189,6 +189,7 @@ class Win(QWidget):
         self.Button_Pressure_Analysis.setStyleSheet("QPushButton{font-size:30px;font-weight:normal;}")
         self.Button_Pressure_Analysis.clicked.connect(self.pressure_analysis)
 
+        # Left analysis
         self.Label_Strd_time_heel_L = QLabel(self)
         self.Label_Strd_time_heel_L.setText("Avg Heel Stride Time(Left, in ms):")
         self.Label_Strd_time_heel_L.resize(600, 100)
@@ -208,6 +209,15 @@ class Win(QWidget):
         self.Label_error_L.setStyleSheet(
             "QLabel{color:rgb(255,200,0,255);font-size:20px;font-weight:normal;font-family:Arial;}")
 
+        self.Avg_EMG_L = QLabel(self)
+        self.Avg_EMG_L.setText("Avg EMG(Left): ")
+        self.Avg_EMG_L.resize(600, 100)
+        self.Avg_EMG_L.move(1020, 330)
+        self.Avg_EMG_L.setStyleSheet(
+            "QLabel{color:rgb(0,200,100,255);font-size:20px;font-weight:normal;font-family:Arial;}")
+
+        # Right analysis
+
         self.Label_Strd_time_heel_R = QLabel(self)
         self.Label_Strd_time_heel_R.setText("Avg Heel Stride Time(Right, in ms):")
         self.Label_Strd_time_heel_R.resize(600, 100)
@@ -226,6 +236,13 @@ class Win(QWidget):
         self.Label_error_R.resize(600, 100)
         self.Label_error_R.move(1520, 230)
         self.Label_error_R.setStyleSheet("QLabel{color:rgb(255,200,0,255);font-size:20px;font-weight:normal;font-family:Arial;}")
+
+        self.Avg_EMG_R = QLabel(self)
+        self.Avg_EMG_R.setText("Avg EMG(Right): ")
+        self.Avg_EMG_R.resize(600, 100)
+        self.Avg_EMG_R.move(1520, 330)
+        self.Avg_EMG_R.setStyleSheet(
+            "QLabel{color:rgb(0,200,100,255);font-size:20px;font-weight:normal;font-family:Arial;}")
 
 
 

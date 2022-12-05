@@ -207,6 +207,12 @@ class Win(QWidget):
         self.Label_error_L.move(1020, 230)
         self.Label_error_L.setStyleSheet(
             "QLabel{color:rgb(255,200,0,255);font-size:20px;font-weight:normal;font-family:Arial;}")
+        
+        self.EMG_L = QLabel(self)
+        self.EMG_L.setText("Left Cumulative EMG: ")
+        self.EMG_L.resize(600, 100)
+        self.EMG_L.move(1020, 330)
+        self.EMG_L.setStyleSheet("QLabel{color:rgb(255,0,0,255);font-size:20px;font-weight:normal;font-family:Arial;}")
 
         self.Label_Strd_time_heel_R = QLabel(self)
         self.Label_Strd_time_heel_R.setText("Avg Heel Stride Time(Right, in ms):")
@@ -227,9 +233,12 @@ class Win(QWidget):
         self.Label_error_R.move(1520, 230)
         self.Label_error_R.setStyleSheet("QLabel{color:rgb(255,200,0,255);font-size:20px;font-weight:normal;font-family:Arial;}")
 
+        self.EMG_R = QLabel(self)
+        self.EMG_R.setText("Right Cumulative EMG: ")
+        self.EMG_R.resize(600, 100)
+        self.EMG_R.move(1520, 330)
+        self.EMG_R.setStyleSheet("QLabel{color:rgb(255,200,0,255);font-size:20px;font-weight:normal;font-family:Arial;}")
 
-
-        
 
 
     def plotData(self):
@@ -540,6 +549,38 @@ class Win(QWidget):
         R_stride_time_heel.clear()
         L_stride_time_toe.clear()
         R_stride_time_toe.clear()
+
+        # EMG Analysis (should be in a different function, but for simplicity put it here)
+
+        emg_len_L = len(emg_L_rec)
+        emg_len_R = len(emg_R_rec)
+        # if the length of EMG data is smaller than 1, then there is a data collection error
+        if emg_len_L < 1:
+            cumulative_emg_L = 0
+        if emg_len_R < 1:
+            cumulative_emg_R = 0
+        
+        emg_L_rec_abs = list(map(abs, emg_L_rec))
+        emg_R_rec_abs = list(map(abs, emg_R_rec))
+
+        for i in range(emg_len_L - 1):
+            cumulative_emg_L = emg_L_rec_abs(i) + emg_L_rec_abs(i+1)
+
+        for i in range(emg_len_R - 1):
+            cumulative_emg_R = emg_R_rec_abs(i) + emg_R_rec_abs(i+1)
+
+        if cumulative_emg_L != 0:
+            self.EMG_L.setText("Left Cumulative EMG: " + str(cumulative_emg_L))
+        else:
+            self.EMG_L.setText("Data collection error")
+        
+        if cumulative_emg_R != 0:
+            self.EMG_R.setText("Right Cumulative EMG: " + str(cumulative_emg_R))
+        else:
+            self.EMG_R.setText("Data collection error")
+
+        emg_L_rec.clear()
+        emg_R_rec.clear()
 
 
 def Average(lst):

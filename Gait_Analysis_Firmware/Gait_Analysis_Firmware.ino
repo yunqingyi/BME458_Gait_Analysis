@@ -34,6 +34,8 @@ const int pressure_R_F_pin_digi = 7;
 const int pressure_R_B_pin_digi = 8;
 const int velocity_calibrate_pin = 4;
 
+
+
 float vel_cal_x_l = 0.0;
 float vel_cal_y_l = 0.0;
 float vel_cal_z_l = 0.0;
@@ -169,16 +171,19 @@ void pressureAndEMGRead(){
   // pressure_L_B = digitalRead(pressure_L_B_pin_digi);
   // pressure_R_F = digitalRead(pressure_R_F_pin_digi);
   // pressure_R_B = digitalRead(pressure_R_B_pin_digi);
-  const int thres_l = 150;
-  const int thres_r = 150;
 
-  if(analogRead(pressure_L_F_pin)>thres_l) pressure_L_F = 1;
+  const int thres_l_f = 10;
+  const int thres_l_b = 100;
+  const int thres_r_f = 10;
+  const int thres_r_b = 130;
+
+  if(analogRead(pressure_L_F_pin)>thres_l_f) pressure_L_F = 1;
   else pressure_L_F = 0;
-  if(analogRead(pressure_L_B_pin)>thres_l) pressure_L_B = 1;
+  if(analogRead(pressure_L_B_pin)>thres_l_b) pressure_L_B = 1;
   else pressure_L_B = 0;
-  if(analogRead(pressure_R_F_pin)>thres_r) pressure_R_F = 1;
+  if(analogRead(pressure_R_F_pin)>thres_r_f) pressure_R_F = 1;
   else pressure_R_F = 0;
-  if(analogRead(pressure_R_B_pin)>thres_r) pressure_R_B = 1;
+  if(analogRead(pressure_R_B_pin)>thres_r_b) pressure_R_B = 1;
   else pressure_R_B = 0;
 
   if(digitalRead(emg_calibrate_pin)){

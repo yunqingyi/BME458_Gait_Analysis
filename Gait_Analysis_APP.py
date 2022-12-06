@@ -7,6 +7,7 @@ import numpy as np
 from queue import Queue
 import time
 import mouse
+import pyautogui
 
 import sys
 import random
@@ -16,10 +17,15 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QTe
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette
 from collections import defaultdict
 
-portx = 'COM21' # !!!!Check device manager for COM port number!!!!
+portx = 'COM11' # !!!!Check device manager for COM port number!!!!
 system_freq = 20 # freq of data collection, 20Hz = 50 ms
 
 i = 0
+
+# tic tac toe game flag
+ttt_flag = 1
+ttt_calibration = 0
+
 #queue
 Pressure_L_F_Queue = Queue(maxsize=0)
 Pressure_L_B_Queue = Queue(maxsize=0)
@@ -620,31 +626,60 @@ def combine_heel_toe(front, back):
 
 
 def mouse_click():
-    """
-    if Pressure_L_F_rec[-1] != 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] == 0:
-        #mouse.click('left')
-        mouse.click(653, 125)
-    elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] != 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] == 0:
-        mouse.click(846, 128)
-    elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] != 0 and Pressure_R_B_rec[-1] == 0:
-        mouse.click(1054, 120)
-    elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] != 0:
-        mouse.click(651, 323)
-    elif Pressure_L_F_rec[i] != 0 and Pressure_L_B_rec[i] != 0 and Pressure_R_F_rec[i] == 0 and Pressure_R_B_rec[i] != 0:
-        mouse.click(860, 320)
-    elif Pressure_L_F_rec[i] == 0 and Pressure_L_B_rec[i] == 0 and Pressure_R_F_rec[i] != 0 and Pressure_R_B_rec[i] != 0:
-        mouse.click(1059, 325)
-    elif Pressure_L_F_rec[i] != 0 and Pressure_L_B_rec[i] == 0 and Pressure_R_F_rec[i] != 0 and Pressure_R_B_rec[i] == 0:
-        mouse.click(644, 528)
-    elif Pressure_L_F_rec[i] == 0 and Pressure_L_B_rec[i] != 0 and Pressure_R_F_rec[i] == 0 and Pressure_R_B_rec[i] != 0:
-        mouse.click(853, 516)
-    elif Pressure_L_F_rec[i] != 0 and Pressure_L_B_rec[i] != 0 and Pressure_R_F_rec[i] != 0 and Pressure_R_B_rec[i] != 0:
-        mouse.click(1068, 524)
-    """
     while 1:
         time.sleep(3)
-        if Pressure_L_B_rec[-1] != 0:
-            mouse.click('left')
+        """
+        if Pressure_L_F_rec[-1] != 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] == 0:
+            #mouse.click('left')
+            mouse.click(653, 125)
+        elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] != 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] == 0:
+                mouse.click(846, 128)
+        elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] != 0 and Pressure_R_B_rec[-1] == 0:
+            mouse.click(1054, 120)
+        elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] != 0:
+            mouse.click(651, 323)
+        elif Pressure_L_F_rec[-1] != 0 and Pressure_L_B_rec[-1] != 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] != 0:
+            mouse.click(860, 320)
+        elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] != 0 and Pressure_R_B_rec[-1] != 0:
+            mouse.click(1059, 325)
+        elif Pressure_L_F_rec[-1] != 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] != 0 and Pressure_R_B_rec[-1] == 0:
+            mouse.click(644, 528)
+        elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] != 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] != 0:
+            mouse.click(853, 516)
+        elif Pressure_L_F_rec[-1] != 0 and Pressure_L_B_rec[-1] != 0 and Pressure_R_F_rec[-1] != 0 and Pressure_R_B_rec[-1] != 0:
+            mouse.click(1068, 524)
+        """
+        """
+        while 1:
+            time.sleep(3)
+            if Pressure_L_B_rec[-1] != 0:
+                mouse.click('left')
+        """
+        if Pressure_L_F_rec[-1] != 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] == 0:
+            pyautogui.click(1237, 173)
+        elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] != 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] == 0:
+            pyautogui.click(1422, 149)
+        elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] != 0 and Pressure_R_B_rec[-1] == 0:
+            pyautogui.click(1626, 157)
+        elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] != 0:
+            pyautogui.click(1229, 320)
+        # elif Pressure_L_F_rec[-1] != 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] != 0 and Pressure_R_B_rec[-1] != 0:
+            #pyautogui.click(1446, 320)
+        elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] != 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] != 0:
+            pyautogui.click(1636, 317)
+        elif Pressure_L_F_rec[-1] != 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] != 0 and Pressure_R_B_rec[-1] == 0:
+            pyautogui.click(1210, 518)
+        elif Pressure_L_F_rec[-1] != 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] != 0:
+            pyautogui.click(1438, 505)
+        elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] != 0 and Pressure_R_F_rec[-1] != 0 and Pressure_R_B_rec[-1] == 0:
+            pyautogui.click(1586, 520)
+
+
+
+def mouse_position():
+    while 1:
+        time.sleep(2)
+        print(mouse.get_position())
 
 
 if __name__ == "__main__":
@@ -680,8 +715,13 @@ if __name__ == "__main__":
     th1 = threading.Thread(target=w.Serial)
     th1.start()
 
-    th2 = threading.Thread(target=mouse_click)
-    th2.start()
+    if ttt_flag == 1:
+        th2 = threading.Thread(target=mouse_click)
+        th2.start()
+
+    if ttt_calibration == 1:
+        th3 = threading.Thread(target=mouse_position)
+        th3.start()
 
     timer = pg.QtCore.QTimer()
     timer.timeout.connect(w.plotData)  # Set timer to refresh the display

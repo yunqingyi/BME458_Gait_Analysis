@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QMainWindow, QTe
 from PyQt5.QtGui import QIcon, QFont, QPixmap, QPalette
 from collections import defaultdict
 
-portx = 'COM20' # !!!!Check device manager for COM port number!!!!
+portx = 'COM21' # !!!!Check device manager for COM port number!!!!
 system_freq = 20 # freq of data collection, 20Hz = 50 ms
 
 i = 0
@@ -98,7 +98,7 @@ class Win(QWidget):
         self.EMG_L_pw.resize(400,225)
         self.EMG_L_pw.move(130, 270)
         self.EMG_L_pw.showGrid(x=True, y=True)  # Turn on grid
-        self.EMG_L_pw.setRange(xRange=[0, historyLength], yRange=[-100, 800], padding=0)
+        self.EMG_L_pw.setRange(xRange=[0, historyLength], yRange=[-350, 350], padding=0)
         self.EMG_L_Curve = self.EMG_L_pw.plot(EMG_L_Data, pen='r')  # plot in the widget
 
         self.Velocity_L_X_pw = pg.PlotWidget(self)  # Create a PlotWidget
@@ -128,7 +128,7 @@ class Win(QWidget):
         self.EMG_R_pw.resize(400, 225)
         self.EMG_R_pw.move(600, 270)
         self.EMG_R_pw.showGrid(x=True, y=True)  # Turn on grid
-        self.EMG_R_pw.setRange(xRange=[0, historyLength], yRange=[-100, 800], padding=0)
+        self.EMG_R_pw.setRange(xRange=[0, historyLength], yRange=[-350, 350], padding=0)
         self.EMG_R_Curve = self.EMG_R_pw.plot(EMG_R_Data, pen='r')  # plot in the widget
 
         self.Velocity_R_X_pw = pg.PlotWidget(self)  # Create a PlotWidget
@@ -184,12 +184,13 @@ class Win(QWidget):
         # End of plot labels
 
         self.Button_Pressure_Analysis = QPushButton(self)
-        self.Button_Pressure_Analysis.setText("Get Stride Time")
+        self.Button_Pressure_Analysis.setText("Update Analysis")
         self.Button_Pressure_Analysis.resize(400, 50)
         self.Button_Pressure_Analysis.move(1500, 900)
         self.Button_Pressure_Analysis.setStyleSheet("QPushButton{font-size:30px;font-weight:normal;}")
         self.Button_Pressure_Analysis.clicked.connect(self.pressure_analysis)
 
+        # Left analysis
         self.Label_Strd_time_heel_L = QLabel(self)
         self.Label_Strd_time_heel_L.setText("Avg Heel Stride Time(Left, in ms):")
         self.Label_Strd_time_heel_L.resize(600, 100)
@@ -208,12 +209,15 @@ class Win(QWidget):
         self.Label_error_L.move(1020, 230)
         self.Label_error_L.setStyleSheet(
             "QLabel{color:rgb(255,200,0,255);font-size:20px;font-weight:normal;font-family:Arial;}")
-        
-        self.EMG_L = QLabel(self)
-        self.EMG_L.setText("Left Cumulative EMG: ")
-        self.EMG_L.resize(600, 100)
-        self.EMG_L.move(1020, 330)
-        self.EMG_L.setStyleSheet("QLabel{color:rgb(255,0,0,255);font-size:20px;font-weight:normal;font-family:Arial;}")
+
+        self.cumulative_emg_L = QLabel(self)
+        self.cumulative_emg_L.setText("Cumulative EMG(Left): ")
+        self.cumulative_emg_L.resize(600, 100)
+        self.cumulative_emg_L.move(1020, 330)
+        self.cumulative_emg_L.setStyleSheet(
+            "QLabel{color:rgb(0,200,100,255);font-size:20px;font-weight:normal;font-family:Arial;}")
+
+        # Right analysis
 
         self.Label_Strd_time_heel_R = QLabel(self)
         self.Label_Strd_time_heel_R.setText("Avg Heel Stride Time(Right, in ms):")
@@ -234,11 +238,13 @@ class Win(QWidget):
         self.Label_error_R.move(1520, 230)
         self.Label_error_R.setStyleSheet("QLabel{color:rgb(255,200,0,255);font-size:20px;font-weight:normal;font-family:Arial;}")
 
-        self.EMG_R = QLabel(self)
-        self.EMG_R.setText("Right Cumulative EMG: ")
-        self.EMG_R.resize(600, 100)
-        self.EMG_R.move(1520, 330)
-        self.EMG_R.setStyleSheet("QLabel{color:rgb(255,200,0,255);font-size:20px;font-weight:normal;font-family:Arial;}")
+        self.cumulative_emg_R = QLabel(self)
+        self.cumulative_emg_R.setText("Cumulative EMG(Right): ")
+        self.cumulative_emg_R.resize(600, 100)
+        self.cumulative_emg_R.move(1520, 330)
+        self.cumulative_emg_R.setStyleSheet(
+            "QLabel{color:rgb(0,200,100,255);font-size:20px;font-weight:normal;font-family:Arial;}")
+
 
 
 
@@ -565,20 +571,20 @@ class Win(QWidget):
         emg_R_rec_abs = list(map(abs, emg_R_rec))
 
         for i in range(emg_len_L - 1):
-            cumulative_emg_L = emg_L_rec_abs(i) + emg_L_rec_abs(i+1)
+            cumulative_emg_L = emg_L_rec_abs[i] + emg_L_rec_abs[i+1]
 
         for i in range(emg_len_R - 1):
-            cumulative_emg_R = emg_R_rec_abs(i) + emg_R_rec_abs(i+1)
+            cumulative_emg_R = emg_R_rec_abs[i] + emg_R_rec_abs[i+1]
 
         if cumulative_emg_L != 0:
-            self.EMG_L.setText("Left Cumulative EMG: " + str(cumulative_emg_L))
+            self.cumulative_emg_L.setText("Cumulative EMG(Left): \r\n" + str(cumulative_emg_L))
         else:
-            self.EMG_L.setText("Data collection error")
+            self.cumulative_emg_L.setText("Cumulative EMG(Left): \r\nData collection error")
         
         if cumulative_emg_R != 0:
-            self.EMG_R.setText("Right Cumulative EMG: " + str(cumulative_emg_R))
+            self.cumulative_emg_R.setText("Cumulative EMG(Right): \r\n" + str(cumulative_emg_R))
         else:
-            self.EMG_R.setText("Data collection error")
+            self.cumulative_emg_R.setText("Cumulative EMG(Right): \r\nData collection error")
 
         emg_L_rec.clear()
         emg_R_rec.clear()

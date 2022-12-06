@@ -169,8 +169,8 @@ void pressureAndEMGRead(){
   // pressure_L_B = digitalRead(pressure_L_B_pin_digi);
   // pressure_R_F = digitalRead(pressure_R_F_pin_digi);
   // pressure_R_B = digitalRead(pressure_R_B_pin_digi);
-  const int thres_l = 160;
-  const int thres_r = 160;
+  const int thres_l = 150;
+  const int thres_r = 150;
 
   if(analogRead(pressure_L_F_pin)>thres_l) pressure_L_F = 1;
   else pressure_L_F = 0;
@@ -239,10 +239,10 @@ void loop() {
   Serial.print(",");
   Serial.print(String(vel_R_Z));
   Serial.print(",");
-  Serial.print(String(avg_emg_L));
-  Serial.print(",");
-  Serial.print(String(avg_emg_R));
-  Serial.print(",");
+  // Serial.print(String(avg_emg_L));
+  // Serial.print(",");
+  // Serial.print(String(avg_emg_R));
+  // Serial.print(",");
   Serial.println();
 
 

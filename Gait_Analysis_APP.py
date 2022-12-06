@@ -620,14 +620,15 @@ def combine_heel_toe(front, back):
 
 
 def mouse_click():
-    if Pressure_L_F_rec[i] != 0 and Pressure_L_B_rec[i] == 0 and Pressure_R_F_rec[i] == 0 and Pressure_R_B_rec[i] == 0:
+    """
+    if Pressure_L_F_rec[-1] != 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] == 0:
         #mouse.click('left')
         mouse.click(653, 125)
-    elif Pressure_L_F_rec[i] == 0 and Pressure_L_B_rec[i] != 0 and Pressure_R_F_rec[i] == 0 and Pressure_R_B_rec[i] == 0:
+    elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] != 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] == 0:
         mouse.click(846, 128)
-    elif Pressure_L_F_rec[i] == 0 and Pressure_L_B_rec[i] == 0 and Pressure_R_F_rec[i] != 0 and Pressure_R_B_rec[i] == 0:
+    elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] != 0 and Pressure_R_B_rec[-1] == 0:
         mouse.click(1054, 120)
-    elif Pressure_L_F_rec[i] == 0 and Pressure_L_B_rec[i] == 0 and Pressure_R_F_rec[i] == 0 and Pressure_R_B_rec[i] != 0:
+    elif Pressure_L_F_rec[-1] == 0 and Pressure_L_B_rec[-1] == 0 and Pressure_R_F_rec[-1] == 0 and Pressure_R_B_rec[-1] != 0:
         mouse.click(651, 323)
     elif Pressure_L_F_rec[i] != 0 and Pressure_L_B_rec[i] != 0 and Pressure_R_F_rec[i] == 0 and Pressure_R_B_rec[i] != 0:
         mouse.click(860, 320)
@@ -639,6 +640,11 @@ def mouse_click():
         mouse.click(853, 516)
     elif Pressure_L_F_rec[i] != 0 and Pressure_L_B_rec[i] != 0 and Pressure_R_F_rec[i] != 0 and Pressure_R_B_rec[i] != 0:
         mouse.click(1068, 524)
+    """
+    while 1:
+        time.sleep(3)
+        if Pressure_L_B_rec[-1] != 0:
+            mouse.click('left')
 
 
 if __name__ == "__main__":
